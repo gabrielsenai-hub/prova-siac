@@ -9,5 +9,6 @@ public interface IProdutoRepository
     Task<Produto> GetProdutoById(int id);
     Task DeleteProduto(Produto produto);
     Task CreateProduto(Produto produto);
+    Task<bool> RemoverEstoqueProduto(int id, int quantidadeRemover);
     Task UpdateProduto(Produto produto);
 }

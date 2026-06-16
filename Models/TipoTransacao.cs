@@ -2,5 +2,5 @@
 
 public enum TipoTransacao
 {
-    ADICAO, REMOCAO, ATUALIZACAO
+    ADICAO, REMOCAO, ATUALIZACAO, SAIDA
 }

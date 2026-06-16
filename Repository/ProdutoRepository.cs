@@ -72,7 +72,24 @@ public class ProdutoRepository : IProdutoRepository
 
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> RemoverEstoqueProduto(int id, int quantidadeRemover)
+    {
+        var produto = await _context.Produtos.FindAsync(id);
 
+        if (produto == null || produto.Quantidade < quantidadeRemover)
+        {
+            return false; // Produto não encontrado ou estoque insuficiente
+        }
+
+        produto.Quantidade -= quantidadeRemover;
+        _context.Produtos.Update(produto);
+
+        // Adapte o TipoTransacao para o enum que você utiliza (ex: SAIDA, DEBITO, etc.)
+        await GerarLog(TipoTransacao.SAIDA, produto);
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
     public async Task UpdateProduto(Produto produto)
     {
         _context.Produtos.Update(produto);

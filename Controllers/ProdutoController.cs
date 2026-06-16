@@ -29,7 +29,24 @@ public class ProdutoController : Controller
         TempData["Sucesso"] = "Produto criado com sucesso.";
         return RedirectToAction("Index", "Home");
     }
+[HttpPost("RemoverEstoque")]
+public async Task<IActionResult> RemoverEstoque(int id, int quantidadeRemover)
+{
+    if (quantidadeRemover <= 0)
+    {
+        TempData["Erro"] = "A quantidade a ser removida deve ser maior que zero.";
+        return RedirectToAction("Index", "Home");
+    }
 
+    bool sucesso = await _produtoRepository.RemoverEstoqueProduto(id, quantidadeRemover);
+    
+    if (!sucesso)
+    {
+        TempData["Erro"] = "Estoque insuficiente para concluir a operação.";
+    }
+    
+    return RedirectToAction("Index", "Home");
+}
     [HttpPost("Editar")]
     public async Task<IActionResult> Editar(Produto produto)
     {
