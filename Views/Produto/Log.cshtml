@@ -1,0 +1,78 @@
+﻿@using ProvaSiac.Models
+@model List<ProvaSiac.Models.Transacao>
+
+@{
+    ViewData["Title"] = "Log de Transações";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="bi bi-clock-history"></i>
+                Histórico de Transações
+            </h4>
+        </div>
+
+        <div class="card-body p-0">
+            <div style="max-height: 650px; overflow-y: auto;">
+                <ul class="list-group list-group-flush">
+
+                    @if (!Model.Any())
+                    {
+                        <li class="list-group-item text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-3"></i>
+                            <div>Nenhuma transação encontrada.</div>
+                        </li>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.OrderByDescending(t => t.Horario))
+                        {
+                            string icon = item.Tipo switch
+                            {
+                                TipoTransacao.ADICAO => "bi-plus-circle-fill text-success",
+                                TipoTransacao.ATUALIZACAO => "bi-pencil-square text-warning",
+                                TipoTransacao.REMOCAO => "bi-trash-fill text-danger",
+                                _ => "bi-info-circle"
+                            };
+
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+
+                                    <div>
+                                        <div class="fw-bold">
+                                            <i class="bi @icon me-2"></i>
+                                            @item.Tipo 
+                                        </div>
+
+                                        <div>
+                                            <strong>Produto:</strong>
+                                            @item.NomePoduto
+                                            (#@item.IdProduto)
+                                        </div>
+
+                                        <div class="text-muted">
+                                            <i class="bi bi-person"></i>
+                                            @item.Usuario
+                                        </div>
+                                    </div>
+
+                                    <div class="text-end text-muted small">
+                                        <i class="bi bi-calendar-event"></i>
+                                        @item.Horario.ToString("dd/MM/yyyy")
+                                        <br/>
+                                        <i class="bi bi-clock"></i>
+                                        @item.Horario.ToString("HH:mm:ss")
+                                    </div>
+
+                                </div>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

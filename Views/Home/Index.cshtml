@@ -1,0 +1,321 @@
+﻿@model List<ProvaSiac.Models.Produto>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Produtos</h2>
+            <p class="text-muted mb-0">Gerencie seus itens cadastrados</p>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#modalCriarProduto">
+                <i class="bi bi-plus-circle me-1"></i>
+                Novo produto
+            </button>
+        }
+    </div>
+
+    <div class="row g-4" id="gridTopicos">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4 fade-in-up topic-card" data-id="@item.Id">
+                <div class="card card-premium h-100 shadow-sm p-2">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-secondary-subtle text-secondary">
+                                <i class="bi bi-box-seam me-1"></i>
+                                Produto
+                            </span>
+
+                            <span class="text-muted small">
+                                #@item.Id
+                            </span>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-3">@item.Nome</h5>
+
+                        <div class="mb-2">
+                            <div class="text-muted small">
+                                <i class="bi bi-123 me-1"></i>
+                                Quantidade
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center w-100 flex-row">
+
+                                <div class="fw-semibold">@item.Quantidade</div>
+                                @if (@item.Quantidade < 5)
+                                {
+                                    <div class="alert alert-danger p-1 rounded"><i class="bi bi-exclamation-diamond-fill"></i>
+                                        Crítico
+                                    </div>
+
+                                }
+                                else if (@item.Quantidade < 10)
+                                {
+                                    <div class="alert alert-warning p-1 rounded"><i class="bi bi-exclamation-diamond-fill"></i>
+                                        Atenção
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-2 w-100 d-flex justify-content-between">
+                            <div class="d-flex flex-column">
+                                <div class="text-muted small">
+                                    Marca
+                                </div>
+                                <div class="fw-semibold">@item.Marca</div>
+                            </div>
+                            <div class="d-flex flex-column">
+
+                                <div class="text-muted small">
+                                    Modelo
+                                </div>
+                                <div class="fw-semibold">@item.Modelo</div>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="mb-2">
+                            <div class="text-muted small">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Data de criação
+                            </div>
+                            <div class="fw-semibold">@item.DataCriacao.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary flex-grow-1"
+                                            data-bs-toggle="modal" data-bs-target="#modalEditar-@item.Id">
+                                        <i class="bi bi-pencil-square me-1"></i>
+                                        Editar
+                                    </button>
+                                    @if (User.IsInRole("Master"))
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-danger flex-grow-1"
+                                                data-bs-toggle="modal" data-bs-target="#modalExcluir-@item.Id">
+                                            <i class="bi bi-trash me-1"></i>
+                                            Excluir
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="modal fade" id="modalEditar-@item.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="bi bi-pencil-square me-1"></i>
+                                            Editar produto
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fechar"></button>
+                                    </div>
+
+                                    <form asp-action="Editar" asp-controller="Produto" method="post">
+                                        @Html.AntiForgeryToken()
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="Id" value="@item.Id" />
+                                            <input type="hidden" name="IdUsuario" value="@item.IdUsuario" />
+                                            <input type="hidden" name="DataCriacao" value="@item.DataCriacao" />
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Nome</label>
+                                                <input type="text" class="form-control" name="Nome" value="@item.Nome"
+                                                       required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Marca</label>
+                                                <input type="text" value="@item.Marca" class="form-control" name="Material"
+                                                       required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Modelo</label>
+                                                <input type="text" value="@item.Modelo" class="form-control" name="Material"
+                                                       required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade</label>
+                                                <input type="number" class="form-control" name="Quantidade"
+                                                       value="@item.Quantidade" min="0" required />
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-check-lg me-1"></i>
+                                                Salvar alterações
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        @if (User.IsInRole("Master"))
+                        {
+
+
+                            <div class="modal fade" id="modalExcluir-@item.Id" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title text-danger">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                                Confirmar exclusão
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Fechar"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <p class="mb-2">Tem certeza que deseja excluir este produto?</p>
+
+                                            <div class="border rounded p-3 bg-light">
+                                                <div>
+                                                    <strong>Nome:</strong> @item.Nome
+                                                </div>
+                                                <div>
+                                                    <strong>Quantidade:</strong> @item.Quantidade
+                                                    @if (@item.Quantidade < 15)
+                                                    {
+                                                        <div class="alert alert-warning rounded">Alerta de quantidade crítica</div>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <strong>Criado em:</strong> @item.DataCriacao.ToString("dd/MM/yyyy HH:mm")
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form asp-action="Excluir" asp-controller="Produto" method="post">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="id" value="@item.Id" />
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-trash me-1"></i>
+                                                    Excluir
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        }
+
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="modal fade" id="modalCriarProduto" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Novo produto
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+
+                        <form asp-action="Criar" asp-controller="Produto" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" class="form-control" name="Nome" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Material do cabo</label>
+                                    <input type="text" class="form-control" name="Material" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Marca</label>
+                                    <input type="text" class="form-control" name="Marca" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Modelo</label>
+                                    <input type="text" class="form-control" name="Modelo" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Peso</label>
+                                    <input type="number" step="any" class="form-control" name="Peso" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tensão elétrica</label>
+                                    <input type="number" step="any" class="form-control" name="Tensao" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tamanho</label>
+                                    <select class="form-control" name="Tamanho" required>
+                                        <option value="" selected>Selecione uma opção...</option>
+                                        <option value="Pequeno">Pequeno</option>
+                                        <option value="Medio">Médio</option>
+                                        <option value="Grande">Grande</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tamanho da chave/Furadeira</label>
+                                    <select class="form-control" name="TamanhoChave" required>
+                                        <option value="" selected>Selecione uma opção...</option>
+                                        <option value="Pequeno">Pequeno</option>
+                                        <option value="Medio">Médio</option>
+                                        <option value="Grande">Grande</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Quantidade</label>
+                                    <input type="number" class="form-control" name="Quantidade" min="0" required />
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-1"></i>
+                                    Criar produto
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
