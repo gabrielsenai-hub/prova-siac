@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Identity;
 public class Seed
     {
         private const string MasterRole = "Master";
-        private const string AdminEmail = "adminIB@gmail.com";
-        private const string AdminPassword = "InfoBairros!1";
+        private const string AdminEmail = "adminMaster@gmail.com";
+        private const string AdminPassword = "MeuSiac123";
         public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
             // Garante que a Role Master exista antes de tentar atribuí-la ao usuário
