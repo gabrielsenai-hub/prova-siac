@@ -26,6 +26,7 @@ builder.Services.AddDefaultIdentity<Usuario>(options =>
         options.Password.RequiredLength = 6;
         options.SignIn.RequireConfirmedAccount = false;
     })
+    .AddRoles<IdentityRole>() 
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 

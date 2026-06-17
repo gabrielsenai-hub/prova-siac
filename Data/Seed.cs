@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ProvaSiac.Models;
 using Microsoft.AspNetCore.Identity;
-
 public class Seed
     {
         private const string MasterRole = "Master";
@@ -40,7 +35,7 @@ public class Seed
                     UserName = AdminEmail,
                     Email = AdminEmail,
                     EmailConfirmed = true,
-                    Nome = "Master Administrator",
+                    Nome = "Master Administrador",
                 };
 
                 var createResult = await userManager.CreateAsync(masterUser, AdminPassword);

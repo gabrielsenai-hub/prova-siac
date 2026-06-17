@@ -65,8 +65,8 @@ public class UsuarioController : Controller
             return RedirectToAction("Cadastro", "Home");
         }
 
+        await _userManager.AddToRoleAsync(newUser, "Operador");
         await _signInManager.SignInAsync(newUser, false);
-
         return RedirectToAction("Index", "Home");
     }
 

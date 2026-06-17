@@ -15,7 +15,7 @@
         @if (User.Identity?.IsAuthenticated == true)
         {
             <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal"
-                    data-bs-target="#modalCriarProduto">
+                    data-bs-target="#modalCriar">
                 <i class="bi bi-plus-circle me-1"></i>
                 Novo produto
             </button>
@@ -158,105 +158,209 @@
                                         </div>
                                     </div>
                                 </div>
+
                             }
                         </div>
                     </div>
+                    <div class="modal fade" id="modalEditar-@item.Id" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-1"></i> Editar Produto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form asp-action="Editar" asp-controller="Produto" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" name="Id" value="@item.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" name="Nome" value="@item.Nome" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" name="Quantidade" value="@item.Quantidade" min="0" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Marca</label>
+                        <input type="text" class="form-control" name="Marca" value="@item.Marca" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Modelo</label>
+                        <input type="text" class="form-control" name="Modelo" value="@item.Modelo" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("Master"))
+{
+    <div class="modal fade" id="modalExcluir-@item.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Confirmar Exclusão
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <form asp-action="Excluir" asp-controller="Produto" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" name="Id" value="@item.Id" />
+                        <p>Tem certeza de que deseja excluir permanentemente o produto <strong>@item.Nome</strong>?</p>
+                        <p class="text-danger small mb-0">Esta ação não poderá ser desfeita e todo o histórico deste item será removido.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir Produto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
                 }
             </div>
 
             <nav class="mt-4">
                 <ul class="pagination justify-content-center" id="paginacaoControles"></ul>
             </nav>
+<div class="modal fade" id="modalCriar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-1"></i> Adicionar Novo Produto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form asp-action="Criar" asp-controller="Produto" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" name="Nome" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" name="Quantidade" min="0" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Marca</label>
+                        <input type="text" class="form-control" name="Marca" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Modelo</label>
+                        <input type="text" class="form-control" name="Modelo" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+            <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const itensPorPagina = 6;
+                        let paginaAtual = 1;
 
-                <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const itensPorPagina = 6;
-                            let paginaAtual = 1;
+                        const cards = Array.from(document.querySelectorAll('.topic-card'));
+                        const inputFiltro = document.getElementById('filtroNome');
+                        const selectOrdenacao = document.getElementById('ordenacaoData');
+                        const containerPaginacao = document.getElementById('paginacaoControles');
 
-                            const cards = Array.from(document.querySelectorAll('.topic-card'));
-                            const inputFiltro = document.getElementById('filtroNome');
-                            const selectOrdenacao = document.getElementById('ordenacaoData');
-                            const containerPaginacao = document.getElementById('paginacaoControles');
+                        function renderizarGrid() {
+                            const termoBusca = inputFiltro.value.toLowerCase().trim();
+                            const ordemData = selectOrdenacao.value; // 'asc' ou 'desc'
 
-                            function renderizarGrid() {
-                                const termoBusca = inputFiltro.value.toLowerCase().trim();
-                                const ordemData = selectOrdenacao.value; // 'asc' ou 'desc'
+                            // 1. Filtrar
+                            let cardsFiltrados = cards.filter(card => {
+                                const nome = card.getAttribute('data-nome');
+                                return nome.includes(termoBusca);
+                            });
 
-                                // 1. Filtrar
-                                let cardsFiltrados = cards.filter(card => {
-                                    const nome = card.getAttribute('data-nome');
-                                    return nome.includes(termoBusca);
+                            // 2. Ordenar
+                            cardsFiltrados.sort((a, b) => {
+                                const dataA = new Date(a.getAttribute('data-data'));
+                                const dataB = new Date(b.getAttribute('data-data'));
+                                return ordemData === 'desc' ? dataB - dataA : dataA - dataB;
+                            });
+
+                            // 3. Paginar
+                            const totalPaginas = Math.ceil(cardsFiltrados.length / itensPorPagina);
+                            if (paginaAtual > totalPaginas) paginaAtual = totalPaginas || 1;
+
+                            const inicioIndex = (paginaAtual - 1) * itensPorPagina;
+                            const fimIndex = inicioIndex + itensPorPagina;
+
+                            // Ocultar todos primeiro
+                            cards.forEach(card => {
+                                card.style.display = 'none';
+                                card.classList.remove('d-block'); // Garantir limpeza se houver classe d-block
+                            });
+
+                            // Exibir apenas os da página atual
+                            cardsFiltrados.slice(inicioIndex, fimIndex).forEach(card => {
+                                card.style.display = ''; // Volta ao padrão de exibição do grid
+                            });
+
+                            renderizarBotoesPaginacao(totalPaginas);
+                        }
+
+                        function renderizarBotoesPaginacao(totalPaginas) {
+                            containerPaginacao.innerHTML = '';
+                            if (totalPaginas <= 1) return;
+
+                            for (let i = 1; i <= totalPaginas; i++) {
+                                const li = document.createElement('li');
+                                li.className = `page-item ${i === paginaAtual ? 'active' : ''}`;
+                                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                                li.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    paginaAtual = i;
+                                    renderizarGrid();
                                 });
-
-                                // 2. Ordenar
-                                cardsFiltrados.sort((a, b) => {
-                                    const dataA = new Date(a.getAttribute('data-data'));
-                                    const dataB = new Date(b.getAttribute('data-data'));
-                                    return ordemData === 'desc' ? dataB - dataA : dataA - dataB;
-                                });
-
-                                // 3. Paginar
-                                const totalPaginas = Math.ceil(cardsFiltrados.length / itensPorPagina);
-                                if (paginaAtual > totalPaginas) paginaAtual = totalPaginas || 1;
-
-                                const inicioIndex = (paginaAtual - 1) * itensPorPagina;
-                                const fimIndex = inicioIndex + itensPorPagina;
-
-                                // Ocultar todos primeiro
-                                cards.forEach(card => {
-                                    card.style.display = 'none';
-                                    card.classList.remove('d-block'); // Garantir limpeza se houver classe d-block
-                                });
-
-                                // Exibir apenas os da página atual
-                                cardsFiltrados.slice(inicioIndex, fimIndex).forEach(card => {
-                                    card.style.display = ''; // Volta ao padrão de exibição do grid
-                                });
-
-                                renderizarBotoesPaginacao(totalPaginas);
+                                containerPaginacao.appendChild(li);
                             }
+                        }
 
-                            function renderizarBotoesPaginacao(totalPaginas) {
-                                containerPaginacao.innerHTML = '';
-                                if (totalPaginas <= 1) return;
+                        // Eventos dos Filtros
+                        inputFiltro.addEventListener('input', () => { paginaAtual = 1; renderizarGrid(); });
+                        selectOrdenacao.addEventListener('change', () => { paginaAtual = 1; renderizarGrid(); });
 
-                                for (let i = 1; i <= totalPaginas; i++) {
-                                    const li = document.createElement('li');
-                                    li.className = `page-item ${i === paginaAtual ? 'active' : ''}`;
-                                    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                                    li.addEventListener('click', (e) => {
-                                        e.preventDefault();
-                                        paginaAtual = i;
-                                        renderizarGrid();
-                                    });
-                                    containerPaginacao.appendChild(li);
+                        // Inicializar Grid
+                        renderizarGrid();
+
+                        // 4. Validação de Saída de Estoque (Evitar quantidade maior que saldo)
+                        const formsSaida = document.querySelectorAll('.form-saida-estoque');
+                        formsSaida.forEach(form => {
+                            form.addEventListener('submit', function (e) {
+                                const quantidadeDisponivel = parseInt(this.querySelector('.estoque-disponivel').getAttribute('data-disponivel'));
+                                const quantidadeSolicitada = parseInt(this.querySelector('.input-quantidade-saida').value);
+                                const containerErro = this.querySelector('.erro-estoque');
+
+                                if (quantidadeSolicitada > quantidadeDisponivel) {
+                                    e.preventDefault(); // Impede o envio do form
+                                    containerErro.classList.remove('d-none');
+                                    containerErro.textContent = `Saida não permitida: Estoque insuficiente. Disponivel ${quantidadeDisponivel}. Solicitado ${quantidadeSolicitada}`;
+                                } else {
+                                    containerErro.classList.add('d-none');
                                 }
-                            }
-
-                            // Eventos dos Filtros
-                            inputFiltro.addEventListener('input', () => { paginaAtual = 1; renderizarGrid(); });
-                            selectOrdenacao.addEventListener('change', () => { paginaAtual = 1; renderizarGrid(); });
-
-                            // Inicializar Grid
-                            renderizarGrid();
-
-                            // 4. Validação de Saída de Estoque (Evitar quantidade maior que saldo)
-                            const formsSaida = document.querySelectorAll('.form-saida-estoque');
-                            formsSaida.forEach(form => {
-                                form.addEventListener('submit', function (e) {
-                                    const quantidadeDisponivel = parseInt(this.querySelector('.estoque-disponivel').getAttribute('data-disponivel'));
-                                    const quantidadeSolicitada = parseInt(this.querySelector('.input-quantidade-saida').value);
-                                    const containerErro = this.querySelector('.erro-estoque');
-
-                                    if (quantidadeSolicitada > quantidadeDisponivel) {
-                                        e.preventDefault(); // Impede o envio do form
-                                        containerErro.classList.remove('d-none');
-                                        containerErro.textContent = `Saida não permitida: Estoque insuficiente. Disponivel ${quantidadeDisponivel}. Solicitado ${quantidadeSolicitada}`;
-                                    } else {
-                                        containerErro.classList.add('d-none');
-                                    }
-                                });
                             });
                         });
-                </script>
+                    });
+            </script>
             

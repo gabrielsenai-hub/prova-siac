@@ -11,7 +11,7 @@ namespace ProvaSiac.Models
         public string IdUsuario { get; set; }
         public string Nome { get; set; }
         public string Marca { get; set; }
-        public string Modelo { get; set; }
+        public string? Modelo { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataCriacao { get; set; } = DateTime.Now;
     }
